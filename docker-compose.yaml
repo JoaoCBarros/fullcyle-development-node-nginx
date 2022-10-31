@@ -1,0 +1,37 @@
+version: '3.3'
+
+services:
+  app:
+    container_name: app
+    build: 
+      context: node
+    image: jpedrobarro/node-challenger:prod
+    networks:
+      - node-challenger
+    entrypoint: node server.js
+  db: 
+    container_name: db
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - node-challenger
+  nginx:
+    container_name: nginx
+    build:
+      context: nginx
+    image: jpedrobarro/nginx-challenger:prod
+    ports:
+      - 8080:80
+    networks:
+      - node-challenger
+
+networks:
+  node-challenger:
+    driver: bridge
