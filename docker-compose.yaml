@@ -6,9 +6,9 @@ services:
     build: 
       context: node
     image: jpedrobarro/node-challenger:prod
+    entrypoint: wait-for db:3306 -t 40 -- node server.js
     networks:
       - node-challenger
-    entrypoint: node server.js
   db: 
     container_name: db
     image: mysql:5.7
@@ -31,6 +31,8 @@ services:
       - 8080:80
     networks:
       - node-challenger
+    depends_on: 
+      - app
 
 networks:
   node-challenger:
